@@ -46,6 +46,9 @@ RUN mkdir -p /app/vault
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 
+# Debug directory contents
+RUN ls -la /app
+
 # Set up entrypoint script
 RUN chmod +x /app/entrypoint.sh
 
