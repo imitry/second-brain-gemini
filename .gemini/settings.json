@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "todoist": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@doist/todoist-ai"],
+      "env": {
+        "TODOIST_API_TOKEN": "${TODOIST_API_KEY}"
+      }
+    }
+  }
+}
