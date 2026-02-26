@@ -1,4 +1,4 @@
-"""Claude processing service."""
+"""Gemini processing service."""
 
 import logging
 import os
@@ -14,13 +14,11 @@ logger = logging.getLogger(__name__)
 DEFAULT_TIMEOUT = 1200  # 20 minutes
 
 
-class ClaudeProcessor:
-    """Service for triggering Claude Code processing."""
+class GeminiProcessor:
+    """Service for triggering Gemini CLI processing."""
 
-    def __init__(self, vault_path: Path, todoist_api_key: str = "") -> None:
+    def __init__(self, vault_path: Path) -> None:
         self.vault_path = Path(vault_path)
-        self.todoist_api_key = todoist_api_key
-        self._mcp_config_path = (self.vault_path.parent / "mcp-config.json").resolve()
 
     def _load_skill_content(self) -> str:
         """Load dbrain-processor skill content for inclusion in prompt.
@@ -28,20 +26,20 @@ class ClaudeProcessor:
         NOTE: @vault/ references don't work in --print mode,
         so we must include skill content directly in the prompt.
         """
-        skill_path = self.vault_path / ".claude/skills/dbrain-processor/SKILL.md"
+        skill_path = self.vault_path / ".gemini/skills/dbrain-processor/SKILL.md"
         if skill_path.exists():
             return skill_path.read_text()
         return ""
 
     def _load_todoist_reference(self) -> str:
         """Load Todoist reference for inclusion in prompt."""
-        ref_path = self.vault_path / ".claude/skills/dbrain-processor/references/todoist.md"
+        ref_path = self.vault_path / ".gemini/skills/dbrain-processor/references/todoist.md"
         if ref_path.exists():
             return ref_path.read_text()
         return ""
 
     def _get_session_context(self, user_id: int) -> str:
-        """Get today's session context for Claude.
+        """Get today's session context for Gemini.
 
         Args:
             user_id: Telegram user ID
@@ -125,7 +123,7 @@ week: {year}-W{week:02d}
                 logger.info("Updated MOC-weekly.md with link to %s", summary_path.stem)
 
     def process_daily(self, day: date | None = None) -> dict[str, Any]:
-        """Process daily file with Claude.
+        """Process daily file with Gemini.
 
         Args:
             day: Date to process (default: today)
@@ -170,18 +168,13 @@ CRITICAL OUTPUT FORMAT:
 - If entries already processed, return status report in same HTML format"""
 
         try:
-            # Pass TODOIST_API_KEY to Claude subprocess
             env = os.environ.copy()
-            if self.todoist_api_key:
-                env["TODOIST_API_KEY"] = self.todoist_api_key
 
             result = subprocess.run(
                 [
-                    "claude",
-                    "--print",
-                    "--dangerously-skip-permissions",
-                    "--mcp-config",
-                    str(self._mcp_config_path),
+                    "gemini",
+                    "--approval-mode", "yolo",
+                    "--sandbox", "false",
                     "-p",
                     prompt,
                 ],
@@ -194,9 +187,9 @@ CRITICAL OUTPUT FORMAT:
             )
 
             if result.returncode != 0:
-                logger.error("Claude processing failed: %s", result.stderr)
+                logger.error("Gemini processing failed: %s", result.stderr)
                 return {
-                    "error": result.stderr or "Claude processing failed",
+                    "error": result.stderr or "Gemini processing failed",
                     "processed_entries": 0,
                 }
 
@@ -208,15 +201,15 @@ CRITICAL OUTPUT FORMAT:
             }
 
         except subprocess.TimeoutExpired:
-            logger.error("Claude processing timed out")
+            logger.error("Gemini processing timed out")
             return {
                 "error": "Processing timed out",
                 "processed_entries": 0,
             }
         except FileNotFoundError:
-            logger.error("Claude CLI not found")
+            logger.error("Gemini CLI not found")
             return {
-                "error": "Claude CLI not installed",
+                "error": "Gemini CLI not installed",
                 "processed_entries": 0,
             }
         except Exception as e:
@@ -227,7 +220,7 @@ CRITICAL OUTPUT FORMAT:
             }
 
     def execute_prompt(self, user_prompt: str, user_id: int = 0) -> dict[str, Any]:
-        """Execute arbitrary prompt with Claude.
+        """Execute arbitrary prompt with Gemini.
 
         Args:
             user_prompt: User's natural language request
@@ -276,16 +269,12 @@ EXECUTION:
 
         try:
             env = os.environ.copy()
-            if self.todoist_api_key:
-                env["TODOIST_API_KEY"] = self.todoist_api_key
 
             result = subprocess.run(
                 [
-                    "claude",
-                    "--print",
-                    "--dangerously-skip-permissions",
-                    "--mcp-config",
-                    str(self._mcp_config_path),
+                    "gemini",
+                    "--approval-mode", "yolo",
+                    "--sandbox", "false",
                     "-p",
                     prompt,
                 ],
@@ -298,9 +287,9 @@ EXECUTION:
             )
 
             if result.returncode != 0:
-                logger.error("Claude execution failed: %s", result.stderr)
+                logger.error("Gemini execution failed: %s", result.stderr)
                 return {
-                    "error": result.stderr or "Claude execution failed",
+                    "error": result.stderr or "Gemini execution failed",
                     "processed_entries": 0,
                 }
 
@@ -310,17 +299,17 @@ EXECUTION:
             }
 
         except subprocess.TimeoutExpired:
-            logger.error("Claude execution timed out")
+            logger.error("Gemini execution timed out")
             return {"error": "Execution timed out", "processed_entries": 0}
         except FileNotFoundError:
-            logger.error("Claude CLI not found")
-            return {"error": "Claude CLI not installed", "processed_entries": 0}
+            logger.error("Gemini CLI not found")
+            return {"error": "Gemini CLI not installed", "processed_entries": 0}
         except Exception as e:
             logger.exception("Unexpected error during execution")
             return {"error": str(e), "processed_entries": 0}
 
     def generate_weekly(self) -> dict[str, Any]:
-        """Generate weekly digest with Claude.
+        """Generate weekly digest with Gemini.
 
         Returns:
             Weekly digest report as dict
@@ -352,16 +341,12 @@ CRITICAL OUTPUT FORMAT:
 
         try:
             env = os.environ.copy()
-            if self.todoist_api_key:
-                env["TODOIST_API_KEY"] = self.todoist_api_key
 
             result = subprocess.run(
                 [
-                    "claude",
-                    "--print",
-                    "--dangerously-skip-permissions",
-                    "--mcp-config",
-                    str(self._mcp_config_path),
+                    "gemini",
+                    "--approval-mode", "yolo",
+                    "--sandbox", "false",
                     "-p",
                     prompt,
                 ],
@@ -398,8 +383,8 @@ CRITICAL OUTPUT FORMAT:
             logger.error("Weekly digest timed out")
             return {"error": "Weekly digest timed out", "processed_entries": 0}
         except FileNotFoundError:
-            logger.error("Claude CLI not found")
-            return {"error": "Claude CLI not installed", "processed_entries": 0}
+            logger.error("Gemini CLI not found")
+            return {"error": "Gemini CLI not installed", "processed_entries": 0}
         except Exception as e:
             logger.exception("Unexpected error during weekly digest")
             return {"error": str(e), "processed_entries": 0}

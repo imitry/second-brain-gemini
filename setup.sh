@@ -217,18 +217,18 @@ install_nodejs() {
     success "Node.js $(node --version) installed"
 }
 
-install_claude_cli() {
-    step "Installing Claude CLI"
+install_gemini_cli() {
+    step "Installing Gemini CLI"
 
-    if check_command claude; then
-        success "Claude CLI already installed: $(claude --version 2>/dev/null || echo 'version unknown')"
+    if check_command gemini; then
+        success "Gemini CLI already installed: $(gemini --version 2>/dev/null || echo 'version unknown')"
         return
     fi
 
-    info "Installing @anthropic-ai/claude-code globally..."
-    sudo npm install -g @anthropic-ai/claude-code
+    info "Installing @google/gemini-cli globally..."
+    sudo npm install -g @google/gemini-cli
 
-    success "Claude CLI installed"
+    success "Gemini CLI installed"
 }
 
 # =============================================================================
@@ -504,11 +504,11 @@ check_status() {
         ERRORS+=("Node.js not found")
     fi
 
-    # Check Claude CLI
-    if check_command claude; then
-        success "Claude CLI: installed"
+    # Check Gemini CLI
+    if check_command gemini; then
+        success "Gemini CLI: installed"
     else
-        WARNINGS+=("Claude CLI not found (needed for AI processing)")
+        WARNINGS+=("Gemini CLI not found (needed for AI processing)")
     fi
 
     # Check .env
@@ -573,21 +573,21 @@ check_status() {
     fi
 }
 
-authorize_claude() {
-    step "Claude CLI Authorization"
+setup_gemini() {
+    step "Gemini CLI Setup"
 
-    if claude auth status 2>/dev/null | grep -q "Logged in"; then
-        success "Claude CLI already authorized"
+    if [ -n "$GEMINI_API_KEY" ]; then
+        success "GEMINI_API_KEY is configured"
         return
     fi
 
-    warn "Claude CLI needs authorization"
+    warn "GEMINI_API_KEY is not set in env"
     echo ""
     echo "Run this command manually:"
-    echo -e "  ${CYAN}claude auth login${NC}"
+    echo -e "  ${CYAN}You will need to set GEMINI_API_KEY in .env${NC}"
     echo ""
     echo "This will open a browser for authentication."
-    echo "After authorizing, the bot will be able to use Claude for AI processing."
+    echo "After configuring it, the bot will be able to use Gemini for AI processing."
     echo ""
 }
 
@@ -602,7 +602,7 @@ main() {
     check_os
 
     echo "This script will:"
-    echo "  1. Install required software (Python, Node.js, uv, Claude CLI)"
+    echo "  1. Install required software (Python, Node.js, uv, Gemini CLI)"
     echo "  2. Clone your fork of the repository"
     echo "  3. Ask for your API tokens"
     echo "  4. Create configuration files"
@@ -620,7 +620,7 @@ main() {
     install_python
     install_uv
     install_nodejs
-    install_claude_cli
+    install_gemini_cli
 
     # Configuration
     clone_repository
@@ -629,7 +629,7 @@ main() {
     install_dependencies
     configure_systemd
     configure_git_remote
-    authorize_claude
+    setup_gemini
 
     # Final check
     check_status

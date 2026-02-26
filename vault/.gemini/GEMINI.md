@@ -122,7 +122,7 @@ Each phase = fresh Claude context for better quality.
 
 ## Card Template (agent-memory)
 
-**Skill:** `.claude/skills/agent-memory/SKILL.md`
+**Skill:** `.gemini/skills/agent-memory/SKILL.md`
 
 All new vault cards follow the agent-memory template:
 
@@ -149,7 +149,7 @@ tier: active
 - `tags` — REQUIRED. 2-5 tags, lowercase, hyphen-separated
 - `status` ≠ `tier`: status = business status, tier = memory (automatic)
 - One fact = one place (DRY). References via [[wikilinks]]
-- Decay engine: `uv run .claude/skills/agent-memory/scripts/memory-engine.py decay .`
+- Decay engine: `uv run .gemini/skills/agent-memory/scripts/memory-engine.py decay .`
 
 ## Skills & References
 
@@ -161,13 +161,13 @@ tier: active
 | `agent-memory` | Card template, decay engine, tiered search |
 | `todoist-ai` | Todoist task management via MCP |
 
-- **Processing:** `.claude/skills/dbrain-processor/SKILL.md`
-- **Graph Builder:** `.claude/skills/graph-builder/SKILL.md`
-- **Vault Health:** `.claude/skills/vault-health/SKILL.md`
-- **Agent Memory:** `.claude/skills/agent-memory/SKILL.md`
-- **Todoist:** `.claude/skills/todoist-ai/SKILL.md`
-- **Rules:** `.claude/rules/` (daily, thoughts, goals, obsidian-markdown, weekly-reflection)
-- **Docs:** `.claude/docs/`
+- **Processing:** `.gemini/skills/dbrain-processor/SKILL.md`
+- **Graph Builder:** `.gemini/skills/graph-builder/SKILL.md`
+- **Vault Health:** `.gemini/skills/vault-health/SKILL.md`
+- **Agent Memory:** `.gemini/skills/agent-memory/SKILL.md`
+- **Todoist:** `.gemini/skills/todoist-ai/SKILL.md`
+- **Rules:** `.gemini/rules/` (daily, thoughts, goals, obsidian-markdown, weekly-reflection)
+- **Docs:** `.gemini/docs/`
 
 ## Graph Builder
 
@@ -181,7 +181,7 @@ tier: active
 **Usage:**
 ```bash
 # Analyze vault
-uv run vault/.claude/skills/graph-builder/scripts/analyze.py
+uv run vault/.gemini/skills/graph-builder/scripts/analyze.py
 
 # Result
 vault/.graph/vault-graph.json  # JSON graph with stats
@@ -206,7 +206,7 @@ vault/.graph/report.md         # Human-readable report
 
 ## Path-Specific Rules
 
-See `.claude/rules/` for format requirements:
+See `.gemini/rules/` for format requirements:
 - `daily-format.md` — daily files format
 - `thoughts-format.md` — thought notes format
 - `goals-format.md` — goals format
@@ -234,14 +234,14 @@ Reports use Telegram HTML:
 
 ## Customization
 
-For personal overrides: create `CLAUDE.local.md`
+For personal overrides: create `GEMINI.local.md`
 
 ## Learnings (from experience)
 
 1. **Don't rewrite working code** without reason (KISS, DRY, YAGNI)
 2. **Don't add checks** that weren't there — let the agent decide
 3. **Don't propose solutions** without studying git log/diff first
-4. **Don't break architecture** (process.sh → Claude → skill is correct)
+4. **Don't break architecture** (process.sh → Gemini → skill is correct)
 5. **Problems are usually simple** (e.g., sed one-liner for HTML fix)
 
 ---

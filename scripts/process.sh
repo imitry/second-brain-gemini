@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# PATH for systemd (claude, uv, npx, node)
+# PATH for systemd (gemini, uv, npx, node)
 export PATH="$HOME/.local/bin:$HOME/.nvm/versions/node/$(ls "$HOME/.nvm/versions/node/" 2>/dev/null | tail -1)/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
 # Paths — auto-detect from script location
@@ -42,12 +42,12 @@ fi
 
 DAILY_SIZE=$(wc -c < "$DAILY_FILE" 2>/dev/null || echo "0")
 if [ "$DAILY_SIZE" -lt 50 ]; then
-    echo "ORIENT: daily/$TODAY.md is empty ($DAILY_SIZE bytes) — skipping Claude processing"
+    echo "ORIENT: daily/$TODAY.md is empty ($DAILY_SIZE bytes) — skipping Gemini processing"
     echo "ORIENT: Running graph rebuild only"
 
     # Still rebuild graph and commit
     cd "$VAULT_DIR"
-    uv run .claude/skills/graph-builder/scripts/analyze.py || echo "Graph rebuild failed (non-critical)"
+    uv run .gemini/skills/graph-builder/scripts/analyze.py || echo "Graph rebuild failed (non-critical)"
     cd "$PROJECT_DIR"
 
     git add -A
@@ -83,7 +83,7 @@ export MAX_MCP_OUTPUT_TOKENS=50000
 # Phase 1: CAPTURE (classify entries → JSON)
 # Phase 2: EXECUTE (create tasks, save thoughts → JSON)
 # Phase 3: REFLECT (generate HTML report, update MEMORY)
-# Each phase = fresh Claude context for better quality.
+# Each phase = fresh Gemini context for better quality.
 
 SESSION_DIR="$VAULT_DIR/.session"
 mkdir -p "$SESSION_DIR"
@@ -103,13 +103,13 @@ cd "$VAULT_DIR"
 
 # ── Phase 1: CAPTURE ──
 echo "=== Phase 1: CAPTURE ==="
-CAPTURE=$(claude --print --dangerously-skip-permissions \
-    -p "Today is $TODAY. Read .claude/skills/dbrain-processor/phases/capture.md and execute Phase 1.
+CAPTURE=$(gemini --approval-mode yolo --sandbox false \
+    -p "Today is $TODAY. Read .gemini/skills/dbrain-processor/phases/capture.md and execute Phase 1.
 Read daily/$TODAY.md, goals/3-weekly.md, goals/2-monthly.md, goals/$YEARLY_GOALS_NAME.
 Classify each entry. Return ONLY JSON." \
     2>&1) || true
 
-# Extract JSON from output (Claude may add text around it)
+# Extract JSON from output (Gemini may add text around it)
 echo "$CAPTURE" | grep -o '{.*}' | python3 -c "
 import sys, json
 for line in sys.stdin:
@@ -128,17 +128,15 @@ echo "Capture saved: $(wc -c < "$CAPTURE_FILE") bytes"
 if grep -q '"error"' "$CAPTURE_FILE"; then
     echo "WARN: Capture phase had issues, falling back to monolith mode"
     # Fallback to monolith processing
-    REPORT=$(claude --print --dangerously-skip-permissions \
-        --mcp-config "$PROJECT_DIR/mcp-config.json" \
+    REPORT=$(gemini --approval-mode yolo --sandbox false \
         -p "Today is $TODAY. Execute daily processing according to dbrain-processor skill.
 $MCP_PROMPT" \
         2>&1) || true
 else
     # ── Phase 2: EXECUTE ──
     echo "=== Phase 2: EXECUTE ==="
-    EXECUTE=$(claude --print --dangerously-skip-permissions \
-        --mcp-config "$PROJECT_DIR/mcp-config.json" \
-        -p "Today is $TODAY. Read .claude/skills/dbrain-processor/phases/execute.md and execute Phase 2.
+    EXECUTE=$(gemini --approval-mode yolo --sandbox false \
+        -p "Today is $TODAY. Read .gemini/skills/dbrain-processor/phases/execute.md and execute Phase 2.
 Read .session/capture.json for input data.
 Read business/_index.md and projects/_index.md for context.
 Create tasks in Todoist, save thoughts, update CRM. Return ONLY JSON.
@@ -160,8 +158,8 @@ sys.stdout.write('{\"error\": \"failed to parse execute output\"}')
 
     # ── Phase 3: REFLECT ──
     echo "=== Phase 3: REFLECT ==="
-    REPORT=$(claude --print --dangerously-skip-permissions \
-        -p "Today is $TODAY. Read .claude/skills/dbrain-processor/phases/reflect.md and execute Phase 3.
+    REPORT=$(gemini --approval-mode yolo --sandbox false \
+        -p "Today is $TODAY. Read .gemini/skills/dbrain-processor/phases/reflect.md and execute Phase 3.
 Read .session/capture.json and .session/execute.json for input data.
 Read MEMORY.md, .session/handoff.md, .graph/health-history.json.
 Generate HTML report, update MEMORY, record observations.
@@ -171,7 +169,7 @@ fi
 
 cd "$PROJECT_DIR"
 
-echo "=== Claude output ==="
+echo "=== Gemini output ==="
 echo "$REPORT"
 echo "===================="
 
@@ -181,11 +179,11 @@ REPORT_CLEAN=$(echo "$REPORT" | sed '/<!--/,/-->/d')
 # Rebuild vault graph (keeps structure up to date)
 echo "=== Rebuilding vault graph ==="
 cd "$VAULT_DIR"
-uv run .claude/skills/graph-builder/scripts/analyze.py || echo "Graph rebuild failed (non-critical)"
+uv run .gemini/skills/graph-builder/scripts/analyze.py || echo "Graph rebuild failed (non-critical)"
 
 # Memory decay (update relevance scores and tiers)
 echo "=== Memory decay ==="
-uv run .claude/skills/agent-memory/scripts/memory-engine.py decay . || echo "Memory decay failed (non-critical)"
+uv run .gemini/skills/agent-memory/scripts/memory-engine.py decay . || echo "Memory decay failed (non-critical)"
 cd "$PROJECT_DIR"
 
 # Git commit

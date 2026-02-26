@@ -1,8 +1,8 @@
 # Agent Second Brain v2
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Stars](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fsmixs%2Fagent-second-brain&query=%24.stargazers_count&label=stars&logo=github&color=blue)](https://github.com/smixs/agent-second-brain/stargazers)
-[![Forks](https://img.shields.io/github/forks/smixs/agent-second-brain?style=flat&logo=github)](https://github.com/smixs/agent-second-brain/forks)
+[![Stars](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fd91me%2Fsecond-brain-gemini&query=%24.stargazers_count&label=stars&logo=github&color=blue)](https://github.com/d91me/second-brain-gemini/stargazers)
+[![Forks](https://img.shields.io/github/forks/d91me/second-brain-gemini?style=flat&logo=github)](https://github.com/d91me/second-brain-gemini/forks)
 
 <p align="center">
   <img alt="Agent Second Brain" src="https://github.com/user-attachments/assets/ea384e65-436b-48a1-a4e1-2b003cafcdbf" />
@@ -133,7 +133,7 @@ cd agent-second-brain
 Подключитесь к серверу и запустите bootstrap-скрипт:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/agent-second-brain/main/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/second-brain-gemini/main/bootstrap.sh | bash
 ```
 
 Скрипт сам скачает проект, спросит все токены, создаст `.env`, настроит автозапуск и запустит бота.

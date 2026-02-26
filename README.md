@@ -1,8 +1,8 @@
 # Agent Second Brain
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Stars](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fsmixs%2Fagent-second-brain&query=%24.stargazers_count&label=stars&logo=github&color=blue)](https://github.com/smixs/agent-second-brain/stargazers)
-[![Forks](https://img.shields.io/github/forks/smixs/agent-second-brain?style=flat&logo=github)](https://github.com/smixs/agent-second-brain/forks)
+[![Stars](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fd91me%2Fsecond-brain-gemini&query=%24.stargazers_count&label=stars&logo=github&color=blue)](https://github.com/d91me/second-brain-gemini/stargazers)
+[![Forks](https://img.shields.io/github/forks/d91me/second-brain-gemini?style=flat&logo=github)](https://github.com/d91me/second-brain-gemini/forks)
 
 <p align="center">
   <img alt="Agent Second Brain" src="https://github.com/user-attachments/assets/5b3611d9-11ba-40a1-92fc-8dc78d78d75b" />
@@ -34,7 +34,7 @@ Telegram (voice / text / photo / forwarded messages)
 Telegram Bot (Node.js) --> Deepgram (voice-to-text)
     |
     v
-Claude Code (--print --dangerously-skip-permissions)
+Gemini CLI (--approval-mode yolo --sandbox false)
     |
     v
 +-- CAPTURE: classify entries --> JSON
@@ -62,7 +62,7 @@ The bot runs as a systemd service on a VPS. A daily timer (21:00 UTC) triggers t
 | **graph-builder** | Knowledge graph analysis, entity relationships, domain mapping |
 | **todoist-ai** | Task management via mcp-cli (Todoist MCP integration) |
 
-Skills live in `vault/.claude/skills/` and are invoked automatically by Claude Code during processing.
+Skills live in `vault/.gemini/skills/` and are invoked automatically by Gemini CLI during processing.
 
 > **Want just the memory engine?** See [agent-memory-skill](https://github.com/smixs/agent-memory-skill) — standalone, zero dependencies.
 
@@ -72,13 +72,13 @@ Skills live in `vault/.claude/skills/` and are invoked automatically by Claude C
 
 ### 1. Fork this repo
 
-Go to [github.com/smixs/agent-second-brain](https://github.com/smixs/agent-second-brain) and click **Fork**. Make the fork **private** — it will contain your personal data.
+Go to [github.com/d91me/second-brain-gemini](https://github.com/d91me/second-brain-gemini) and click **Fork**. Make the fork **private** — it will contain your personal data.
 
 ### 2. Clone to your machine
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/agent-second-brain.git
-cd agent-second-brain
+git clone https://github.com/YOUR_USERNAME/second-brain-gemini.git
+cd second-brain-gemini
 ```
 
 ### 3. Fill in templates
@@ -89,8 +89,8 @@ Open the following files and replace the placeholders with your information:
 - `vault/goals/1-yearly.md` — yearly goals
 - `vault/goals/2-monthly.md` — monthly priorities
 - `vault/goals/3-weekly.md` — weekly focus (ONE Big Thing)
-- `vault/.claude/skills/dbrain-processor/references/about.md` — your profile
-- `vault/.claude/skills/dbrain-processor/references/classification.md` — entry categories
+- `vault/.gemini/skills/dbrain-processor/references/about.md` — your profile
+- `vault/.gemini/skills/dbrain-processor/references/classification.md` — entry categories
 
 ### 4. Get API keys
 
@@ -110,7 +110,7 @@ Short version:
 ```bash
 ssh root@YOUR_SERVER_IP
 # Create a user, install dependencies, clone repo, configure .env
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/agent-second-brain/main/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/second-brain-gemini/main/bootstrap.sh | bash
 ```
 
 ---
@@ -122,8 +122,8 @@ curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/agent-second-brain/ma
 | `.env` | API tokens for Telegram, Deepgram, Todoist (copy from `.env.example`) |
 | `.memory-config.json` | Decay rates, tier thresholds, type inference rules for agent memory |
 | `mcp-config.json` | MCP server configuration (Todoist and other integrations) |
-| `vault/.claude/CLAUDE.md` | Agent instructions, session bootstrap sequence, navigation rules |
-| `vault/.claude/skills/dbrain-processor/references/about.md` | Your personal profile — helps the agent understand context |
+| `vault/.gemini/GEMINI.md` | Agent instructions, session bootstrap sequence, navigation rules |
+| `vault/.gemini/skills/dbrain-processor/references/about.md` | Your personal profile — helps the agent understand context |
 
 All secrets go into `.env` which is gitignored. Never commit API tokens to the repository.
 
@@ -148,7 +148,7 @@ vault/
 ├── templates/          # Card templates (CRM, daily)
 ├── MOC/                # Maps of Content (auto-generated)
 ├── MEMORY.md           # Long-term memory (hot context)
-└── .claude/            # Agent configuration
+└── .gemini/            # Agent configuration
     ├── skills/         # 5 skills (processor, memory, health, graph, todoist)
     ├── rules/          # Formatting rules (obsidian-markdown, weekly-reflection)
     └── docs/           # Reference documentation
@@ -168,7 +168,7 @@ The daily processing pipeline runs in three isolated phases:
 2. **EXECUTE** — Takes the classification JSON, creates Todoist tasks, writes vault files, updates CRM cards, and outputs an execution report as JSON.
 3. **REFLECT** — Generates an HTML summary report, updates `MEMORY.md` with key decisions, and sends the report to Telegram.
 
-Each phase runs as a separate Claude Code invocation. JSON is passed between phases via files, ensuring clean boundaries and debuggability.
+Each phase runs as a separate Gemini CLI invocation. JSON is passed between phases via files, ensuring clean boundaries and debuggability.
 
 ### Memory Decay
 
@@ -218,7 +218,7 @@ The vault-health skill auto-generates MOCs, repairs broken links, and suggests c
 
 | Service | Cost | Purpose |
 |---------|------|---------|
-| Claude Pro | $20/mo | AI processing (Claude Code) |
+| Gemini API | ~$1-5/mo | AI processing (Gemini 2.5 Pro/Flash) |
 | VPS | ~$5/mo | 24/7 bot hosting |
 | Deepgram | Free ($200 credit) | Voice transcription |
 | Todoist | Free / $4/mo Pro | Task management |

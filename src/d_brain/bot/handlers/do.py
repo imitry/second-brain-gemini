@@ -11,7 +11,7 @@ from aiogram.types import Message
 from d_brain.bot.formatters import format_process_report
 from d_brain.bot.states import DoCommandState
 from d_brain.config import get_settings
-from d_brain.services.processor import ClaudeProcessor
+from d_brain.services.processor import GeminiProcessor
 from d_brain.services.transcription import DeepgramTranscriber
 
 router = Router(name="do")
@@ -91,7 +91,7 @@ async def process_request(message: Message, prompt: str, user_id: int = 0) -> No
     status_msg = await message.answer("⏳ Выполняю...")
 
     settings = get_settings()
-    processor = ClaudeProcessor(settings.vault_path, settings.todoist_api_key)
+    processor = GeminiProcessor(settings.vault_path)
 
     async def run_with_progress() -> dict:
         task = asyncio.create_task(
