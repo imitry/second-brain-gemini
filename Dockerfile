@@ -47,7 +47,7 @@ RUN mkdir -p /app/vault
 ENV PYTHONUNBUFFERED=1
 
 # Set up entrypoint script
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
 
