@@ -27,7 +27,7 @@ RUN npm install -g @google/gemini-cli
 WORKDIR /app
 
 # Copy dependency + source files needed for pip install
-COPY pyproject.toml .
+COPY pyproject.toml README.md ./
 COPY src/ src/
 
 # Install Python dependencies using uv
