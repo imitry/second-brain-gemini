@@ -1,7 +1,7 @@
 #!/bin/bash
 # Agent Second Brain — One-command installer
 # Works on Mac and Windows WSL
-# https://github.com/smixs/agent-second-brain
+# https://github.com/d91me/second-brain-gemini
 
 set -e
 
@@ -13,8 +13,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Config
-REPO_URL="https://github.com/smixs/agent-second-brain.git"
-INSTALL_DIR="$HOME/agent-second-brain"
+REPO_URL="https://github.com/d91me/second-brain-gemini.git"
+INSTALL_DIR="$HOME/second-brain-gemini"
 
 #######################################
 # Print colored message
@@ -149,15 +149,15 @@ install_uv() {
 }
 
 #######################################
-# Install Claude Code CLI
+# Install Gemini CLI
 #######################################
-install_claude() {
-    if has_command claude; then
-        success "Claude Code already installed: $(claude --version)"
+install_gemini() {
+    if has_command gemini; then
+        success "Gemini CLI already installed: $(gemini --version)"
     else
-        info "Installing Claude Code CLI..."
-        npm install -g @anthropic-ai/claude-code
-        success "Claude Code installed"
+        info "Installing Gemini CLI..."
+        npm install -g @google/gemini-cli
+        success "Gemini CLI installed"
     fi
 }
 
@@ -338,24 +338,20 @@ EOF
 }
 
 #######################################
-# Authenticate Claude
+# Setup Gemini
 #######################################
-auth_claude() {
+setup_gemini() {
     echo
     echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${YELLOW}Claude Authentication${NC}"
-    echo "You need Claude Pro subscription (\$20/month) for this to work."
+    echo -e "${YELLOW}Gemini Setup${NC}"
+    echo "Make sure you have a Gemini API key."
     echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo
 
-    if claude auth status &>/dev/null; then
-        success "Claude already authenticated"
+    if [[ -n "$GEMINI_API_KEY" ]]; then
+        success "Gemini API key configured"
     else
-        info "Starting Claude authentication..."
-        echo "A browser window will open. Log in with your Anthropic account."
-        echo
-        claude auth login
-        success "Claude authenticated"
+        info "You will need to set GEMINI_API_KEY in your .env file."
     fi
 }
 
@@ -387,13 +383,13 @@ setup_launchd() {
 
     mkdir -p ~/Library/LaunchAgents
 
-    cat > ~/Library/LaunchAgents/com.agent-second-brain.plist << EOF
+    cat > ~/Library/LaunchAgents/com.second-brain-gemini.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.agent-second-brain</string>
+    <string>com.second-brain-gemini</string>
     <key>ProgramArguments</key>
     <array>
         <string>$HOME/.local/bin/uv</string>
@@ -417,7 +413,7 @@ setup_launchd() {
 EOF
 
     mkdir -p "$INSTALL_DIR/logs"
-    launchctl load ~/Library/LaunchAgents/com.agent-second-brain.plist
+    launchctl load ~/Library/LaunchAgents/com.second-brain-gemini.plist
 
     success "Autostart configured (launchd)"
     info "Bot will start automatically on login"
@@ -431,7 +427,7 @@ setup_systemd() {
 
     mkdir -p ~/.config/systemd/user
 
-    cat > ~/.config/systemd/user/agent-second-brain.service << EOF
+    cat > ~/.config/systemd/user/second-brain-gemini.service << EOF
 [Unit]
 Description=Agent Second Brain Telegram Bot
 After=network.target
@@ -449,8 +445,8 @@ WantedBy=default.target
 EOF
 
     systemctl --user daemon-reload
-    systemctl --user enable agent-second-brain
-    systemctl --user start agent-second-brain
+    systemctl --user enable second-brain-gemini
+    systemctl --user start second-brain-gemini
 
     success "Autostart configured (systemd)"
     info "Bot is running now and will start on boot"
@@ -511,13 +507,13 @@ main() {
     install_homebrew
     install_dependencies
     install_uv
-    install_claude
+    install_gemini
     clone_repo
     collect_tokens
     create_env
     install_python_deps
     install_mcp_cli
-    auth_claude
+    setup_gemini
     setup_autostart
     start_bot
 }

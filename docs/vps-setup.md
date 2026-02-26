@@ -123,25 +123,20 @@ npm --version
 
 ---
 
-## Step 8: Install Claude CLI
+## Step 8: Install Gemini CLI
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+npm install -g @google/gemini-cli
 
 # Verify
-which claude
-claude --version
+which gemini
+gemini --version
 
-# Authenticate
-claude auth login
+# Setup API Key
+# Add GEMINI_API_KEY to your .env file
 ```
 
-After `claude auth login`:
-1. A URL appears
-2. Copy and open it in browser on your computer
-3. Log in to Anthropic account
-4. Authorize access
-5. Return to terminal — it will confirm
+After obtaining your Gemini API key from Google AI Studio.
 
 ---
 
@@ -152,8 +147,8 @@ cd ~
 mkdir -p projects
 cd projects
 
-git clone https://github.com/smixs/agent-second-brain.git
-cd agent-second-brain
+git clone https://github.com/d91me/second-brain-gemini.git
+cd second-brain-gemini
 
 ls -la
 ```
@@ -205,7 +200,7 @@ uv run python -c "import aiogram; print('aiogram OK')"
 ## Step 12: Configure Environment
 
 ```bash
-nano ~/projects/agent-second-brain/.env
+nano ~/projects/second-brain-gemini/.env
 ```
 
 Paste (replace with your values):
@@ -213,7 +208,7 @@ Paste (replace with your values):
 ```bash
 TELEGRAM_BOT_TOKEN=7123456789:AAHdN8J2K4m5N6o7P8q9R0s1T2u3V4w5X6y
 DEEPGRAM_API_KEY=a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0
-TODOIST_API_KEY=
+GEMINI_API_KEY=
 VAULT_PATH=./vault
 ALLOWED_USER_IDS=[123456789]
 ```
@@ -225,7 +220,7 @@ Save: `Ctrl+O`, `Enter`, `Ctrl+X`
 ## Step 13: Clean Vault Examples
 
 ```bash
-cd ~/projects/agent-second-brain
+cd ~/projects/second-brain-gemini
 
 rm -rf vault/daily/*
 rm -rf vault/thoughts/ideas/*
@@ -254,7 +249,7 @@ nano vault/goals/3-weekly.md       # Weekly focus
 ## Step 15: Test Run
 
 ```bash
-cd ~/projects/agent-second-brain
+cd ~/projects/second-brain-gemini
 uv run python -m d_brain
 ```
 
@@ -291,7 +286,7 @@ After=network.target
 [Service]
 Type=simple
 User=myuser
-WorkingDirectory=/home/myuser/projects/agent-second-brain
+WorkingDirectory=/home/myuser/projects/second-brain-gemini
 ExecStart=/home/myuser/.local/bin/uv run python -m d_brain
 Restart=always
 RestartSec=10
@@ -321,18 +316,18 @@ Automatically process entries at 21:00 daily.
 ### Edit process script
 
 ```bash
-nano ~/projects/agent-second-brain/scripts/process.sh
+nano ~/projects/second-brain-gemini/scripts/process.sh
 ```
 
 Update paths at the top:
 ```bash
 export HOME="/home/myuser"
-PROJECT_DIR="/home/myuser/projects/agent-second-brain"
+PROJECT_DIR="/home/myuser/projects/second-brain-gemini"
 ```
 
 Make executable:
 ```bash
-chmod +x ~/projects/agent-second-brain/scripts/process.sh
+chmod +x ~/projects/second-brain-gemini/scripts/process.sh
 ```
 
 ### Create timer
@@ -366,8 +361,8 @@ Description=d-brain Daily Processing
 [Service]
 Type=oneshot
 User=myuser
-WorkingDirectory=/home/myuser/projects/agent-second-brain
-ExecStart=/home/myuser/projects/agent-second-brain/scripts/process.sh
+WorkingDirectory=/home/myuser/projects/second-brain-gemini
+ExecStart=/home/myuser/projects/second-brain-gemini/scripts/process.sh
 Environment=PYTHONUNBUFFERED=1
 ```
 
@@ -438,11 +433,11 @@ sudo systemctl status 'd-brain-*'
 sudo systemctl list-timers
 
 # Manual processing
-cd ~/projects/agent-second-brain
+cd ~/projects/second-brain-gemini
 ./scripts/process.sh
 
 # Update code
-cd ~/projects/agent-second-brain
+cd ~/projects/second-brain-gemini
 git pull
 uv sync
 sudo systemctl restart d-brain-bot
@@ -486,8 +481,8 @@ mcp-cli call todoist find-tasks-by-date '{"startDate": "today"}'
 ### Permission errors
 
 ```bash
-sudo chown -R myuser:myuser ~/projects/agent-second-brain
-chmod -R 755 ~/projects/agent-second-brain
+sudo chown -R myuser:myuser ~/projects/second-brain-gemini
+chmod -R 755 ~/projects/second-brain-gemini
 ```
 
 ### Git push fails

@@ -6,7 +6,7 @@
 # Downloads setup.sh and runs it properly (not via pipe)
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/smixs/agent-second-brain/main/bootstrap.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/d91me/second-brain-gemini/main/bootstrap.sh | bash
 # =============================================================================
 
 set -e
@@ -29,7 +29,7 @@ if [ "$EUID" -eq 0 ]; then
 fi
 
 # Always download from original repo
-SETUP_URL="https://raw.githubusercontent.com/smixs/agent-second-brain/main/setup.sh"
+SETUP_URL="https://raw.githubusercontent.com/d91me/second-brain-gemini/main/setup.sh"
 
 echo "Downloading setup script..."
 

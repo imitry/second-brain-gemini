@@ -94,7 +94,7 @@ Claude Code (--print --dangerously-skip-permissions)
 
 ### 1. Сделайте Fork
 
-Откройте [репозиторий](https://github.com/smixs/agent-second-brain) и нажмите кнопку **Fork** в правом верхнем углу.
+Откройте [репозиторий](https://github.com/d91me/second-brain-gemini) и нажмите кнопку **Fork** в правом верхнем углу.
 
 > **Важно:** Сделайте репозиторий приватным. Ваши цели, мысли и записи не должны быть публичными.
 > Settings -> Danger Zone -> Change visibility -> Private.
@@ -102,8 +102,8 @@ Claude Code (--print --dangerously-skip-permissions)
 ### 2. Клонируйте на компьютер
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/agent-second-brain.git
-cd agent-second-brain
+git clone https://github.com/YOUR_USERNAME/second-brain-gemini.git
+cd second-brain-gemini
 ```
 
 ### 3. Заполните шаблоны
@@ -366,7 +366,7 @@ claude auth login
 Самый быстрый способ разобраться с любой проблемой -- запустить Claude прямо в директории проекта:
 
 ```bash
-cd ~/agent-second-brain
+cd ~/second-brain-gemini
 claude
 ```
 
