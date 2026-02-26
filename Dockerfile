@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
-    && curl -L -H "Cache-Control: no-cache" -o /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/download/v1.8.24/Xray-linux-64.zip \
+    && curl -L -H "Cache-Control: no-cache" -o /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/download/v26.2.6/Xray-linux-64.zip \
     && mkdir -p /usr/local/bin/xray-core \
     && unzip /tmp/xray.zip -d /usr/local/bin/xray-core \
     && chmod +x /usr/local/bin/xray-core/xray \
