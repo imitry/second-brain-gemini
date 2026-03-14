@@ -7,3 +7,8 @@ class DoCommandState(StatesGroup):
     """States for /do command flow."""
 
     waiting_for_input = State()  # Waiting for voice or text after /do
+
+class GeminiLoginState(StatesGroup):
+    """States for /auth command flow."""
+
+    waiting_for_code = State()
