@@ -61,6 +61,7 @@ async def cmd_auth(message: Message, state: FSMContext) -> None:
         # Read stdout asynchronously so we don't block the bot
         async def read_stdout():
             output_buffer = ""
+            prompt_sent = False
             try:
                 while True:
                     # Read chunk to avoid character decode errors on boundaries
@@ -72,7 +73,8 @@ async def cmd_auth(message: Message, state: FSMContext) -> None:
                     clean_buffer = strip_ansi(output_buffer)
                         
                     # Periodically check for the prompt
-                    if "Enter the authorization code:" in clean_buffer or "accounts.google.com" in output_buffer:
+                    if not prompt_sent and ("Enter the authorization code:" in clean_buffer or "accounts.google.com" in output_buffer):
+                        prompt_sent = True
                         # Extract the URL robustly, ignoring ANSI fragments
                         url_match = re.search(r'(https://accounts\.google\.com/[^\s\x1b\x00]+)', output_buffer)
                         if url_match:
@@ -84,7 +86,6 @@ async def cmd_auth(message: Message, state: FSMContext) -> None:
                                 f"После успешной авторизации скопируйте полученный код и отправьте его сюда."
                             )
                             await state.set_state(GeminiLoginState.waiting_for_code)
-                            return
                         elif "Enter the authorization code:" in clean_buffer:
                             # Fallback if URL not found
                             await message.answer(
@@ -93,11 +94,14 @@ async def cmd_auth(message: Message, state: FSMContext) -> None:
                                 f"Please paste the code here:"
                             )
                             await state.set_state(GeminiLoginState.waiting_for_code)
-                            return
+                            
+                        # Important: Do not return here! We must keep draining stdout 
+                        # so the process doesn't block when it tries to print success later.
                             
             except Exception as e:
                 logger.error("Error reading stdout from gemini login: %s", e)
-                await message.answer("❌ Error during authorization process.")
+                if not prompt_sent:
+                    await message.answer("❌ Error during authorization process.")
                 
         # Start the background reader task
         asyncio.create_task(read_stdout())
