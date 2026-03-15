@@ -23,14 +23,24 @@ class ProxyAiohttpSession(AiohttpSession):
 
     def __init__(self, proxy_url: str, **kwargs: Any) -> None:
         self.proxy_url = proxy_url
+        self._connector: Any = None
         super().__init__(**kwargs)
 
     async def create_session(self) -> aiohttp.ClientSession:
         """Create a session with the proxy connector."""
         from aiohttp_socks import ProxyConnector
 
-        connector = ProxyConnector.from_url(self.proxy_url)
-        return aiohttp.ClientSession(connector=connector)
+        if self._connector is None or self._connector.closed:
+            self._connector = ProxyConnector.from_url(self.proxy_url)
+
+        return aiohttp.ClientSession(connector=self._connector)
+
+    async def close(self) -> None:
+        """Close the session and the connector."""
+        if self._session is not None and not self._session.closed:
+            await self._session.close()
+        if self._connector is not None and not self._connector.closed:
+            await self._connector.close()
 
 
 def create_bot(settings: Settings) -> Bot:

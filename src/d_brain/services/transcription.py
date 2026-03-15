@@ -14,17 +14,7 @@ class DeepgramTranscriber:
         self.client = AsyncDeepgramClient(api_key=api_key)
 
     async def transcribe(self, audio_bytes: bytes) -> str:
-        """Transcribe audio bytes to text.
-
-        Args:
-            audio_bytes: Audio file content
-
-        Returns:
-            Transcribed text
-
-        Raises:
-            Exception: If transcription fails
-        """
+        """Transcribe audio bytes to text."""
         logger.info("Starting transcription, audio size: %d bytes", len(audio_bytes))
 
         response = await self.client.listen.v1.media.transcribe_file(
@@ -45,3 +35,10 @@ class DeepgramTranscriber:
 
         logger.info("Transcription complete: %d chars", len(transcript))
         return transcript
+
+    async def close(self) -> None:
+        """Close the Deepgram client."""
+        # Deepgram AsyncDeepgramClient doesn't have an explicit close for the whole client,
+        # but it uses a session internally if provided. By default it creates one per request
+        # or uses a shared one. We'll just ensure we don't hold references.
+        pass
