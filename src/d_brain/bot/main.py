@@ -1,11 +1,14 @@
 """Telegram bot initialization and polling."""
 
 import logging
+import os
 from collections.abc import Awaitable, Callable
 from typing import Any
 
+import aiohttp
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Update
@@ -17,6 +20,20 @@ logger = logging.getLogger(__name__)
 
 def create_bot(settings: Settings) -> Bot:
     """Create and configure the Telegram bot."""
+    proxy_url = os.getenv("PROXY_URL")
+
+    if proxy_url:
+        from aiohttp_socks import ProxyConnector
+
+        logger.info("Using SOCKS5 proxy: %s", proxy_url.split("@")[-1] if "@" in proxy_url else proxy_url)
+        connector = ProxyConnector.from_url(proxy_url)
+        session = AiohttpSession(connector=connector)
+        return Bot(
+            token=settings.telegram_bot_token,
+            default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+            session=session,
+        )
+
     return Bot(
         token=settings.telegram_bot_token,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),

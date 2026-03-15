@@ -36,5 +36,11 @@ COPY . .
 # Install python dependencies using uv
 RUN uv sync
 
+# Copy entrypoint that maps PROXY_URL to ALL_PROXY/HTTP_PROXY/HTTPS_PROXY
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
 # Command to run the bot
 CMD ["uv", "run", "python", "-m", "d_brain"]
