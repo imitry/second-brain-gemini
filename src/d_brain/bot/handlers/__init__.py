@@ -12,6 +12,9 @@ from d_brain.bot.handlers import (
     weekly,
 )
 
+# Note: auth handler is excluded because GeminiLoginState
+# was removed from states.py on the coolify branch.
+
 __all__ = [
     "buttons",
     "commands",
